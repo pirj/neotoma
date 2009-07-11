@@ -2,7 +2,15 @@ rules <- space? declaration_sequence space?;
 
 declaration_sequence <- head:declaration tail:(space declaration)*;
 
-declaration <- nonterminal space '<-' space parsing_expression space? ';';
+declaration <- nonterminal space '<-' space parsing_expression space? leg? space? ';';
+
+leg <- '::' space? leg_transform;
+
+symbol_id <- [1-9] [0-9]*;
+
+leg_transform <- symbol_id / leg_tuple;
+
+leg_tuple <- '(' space? head:symbol_id tail:(space? ',' space? symbol_id)* space? ')';
 
 parsing_expression <- choice / sequence / primary;
 
