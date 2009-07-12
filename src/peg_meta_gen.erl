@@ -6,6 +6,7 @@ transform(rules, Node, _Index) ->
   verify_rules(),
   Rules = string:join(lists:nth(2, Node), ";\n\n"),
   Transforms = build_leg(),
+  erase(leg),
   Rules ++ ".\n\n% Transforms\n"++Transforms++"\n";
 transform(declaration_sequence, Node, _Index) ->
   FirstRule = proplists:get_value(head, Node),
