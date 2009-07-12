@@ -1,0 +1,18 @@
+% x = 3
+% y = x
+% z = [1, 2, x, 5]
+% q = {a: 3, b: c}
+
+grammar <- space? head:row tail:(space row)*;
+row <- atom space? '=' space? value : (1, 3);
+value <- simple / array / map;
+simple <- number / atom;
+array <- '[' space? head:simple tail:(',' simple) space? ']';
+map <- '{' space? head:pair tail:(',' pair) space? '}';
+pair <- atom space? ':' space? simple;
+
+number <- (non_zero_digit digit+) / digit;
+atom <- [a-z]+;
+non_zero_digit <- [1-9];
+digit <- [0-9];
+space <- [ \t\n\s\r]*;

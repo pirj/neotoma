@@ -4,7 +4,7 @@ declaration_sequence <- head:declaration tail:(space declaration)*;
 
 declaration <- nonterminal space '<-' space parsing_expression space? leg? space? ';';
 
-leg <- '::' space? leg_transform;
+leg <- ':' space? leg_transform;
 
 symbol_id <- [1-9] [0-9]*;
 
