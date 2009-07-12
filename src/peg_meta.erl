@@ -9,7 +9,19 @@ rule(declaration_sequence) ->
   peg:seq([peg:label('head', fun declaration/2), peg:label('tail', peg:zero_or_more(peg:seq([fun space/2, fun declaration/2])))]);
 
 rule(declaration) ->
-  peg:seq([fun nonterminal/2, fun space/2, peg:string("<-"), fun space/2, fun parsing_expression/2, peg:optional(fun space/2), peg:string(";")]);
+  peg:seq([fun nonterminal/2, fun space/2, peg:string("<-"), fun space/2, fun parsing_expression/2, peg:optional(fun space/2), peg:optional(fun leg/2), peg:optional(fun space/2), peg:string(";")]);
+
+rule(leg) ->
+  peg:seq([peg:string(":"), peg:optional(fun space/2), fun leg_transform/2]);
+
+rule(symbol_id) ->
+  peg:seq([peg:charclass("[1-9]"), peg:zero_or_more(peg:charclass("[0-9]"))]);
+
+rule(leg_transform) ->
+  peg:choose([fun symbol_id/2, fun leg_tuple/2]);
+
+rule(leg_tuple) ->
+  peg:seq([peg:string("("), peg:optional(fun space/2), peg:label('head', fun symbol_id/2), peg:label('tail', peg:zero_or_more(peg:seq([peg:optional(fun space/2), peg:string(","), peg:optional(fun space/2), fun symbol_id/2]))), peg:optional(fun space/2), peg:string(")")]);
 
 rule(parsing_expression) ->
   peg:choose([fun choice/2, fun sequence/2, fun primary/2]);

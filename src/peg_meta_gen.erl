@@ -5,13 +5,15 @@
 transform(rules, Node, _Index) ->
   verify_rules(),
   Rules = string:join(lists:nth(2, Node), ";\n\n"),
-  Rules ++ ".\n";
+  Transforms = build_leg(),
+  Rules ++ ".\n\n% Transforms\n"++Transforms++"\n";
 transform(declaration_sequence, Node, _Index) ->
   FirstRule = proplists:get_value(head, Node),
   OtherRules =  [lists:last(I) || I <- proplists:get_value(tail, Node, [])],
   [FirstRule|OtherRules];
 transform(declaration, [{nonterminal,Symbol}|Node], Index) ->
   add_lhs(Symbol, Index),
+  add_leg(Symbol, lists:nth(6, Node)),
   "rule("++Symbol++") ->\n  " ++ lists:nth(4, Node);
 transform(sequence, Node, _Index) ->
   Tail = [lists:nth(2, S) || S <- proplists:get_value(tail, Node)],
@@ -92,6 +94,26 @@ add_nt(Symbol, Index) ->
           put(nts, [{Symbol,Index}|L])
       end
   end.
+
+add_leg(_Symbol, []) ->
+  nil;
+add_leg(Symbol, LegStruct) ->
+  Leg = lists:flatten(lists:nth(3, LegStruct)),
+  case get(leg) of
+    undefined ->
+      put(leg, [{Symbol, Leg}]);
+    L when is_list(L) ->
+      put(leg, [{Symbol, Leg}|L])
+  end.
+
+build_leg() ->
+  case get(leg) of
+    L when is_list(L) -> build_leg(L);
+    _ -> ""
+  end.
+
+build_leg(Legs) ->
+  ["transform("++Symbol++", Node, _Index) -> lists:nth("++LegId++", Node);\n\n"  || {Symbol, LegId} <- Legs].
 
 verify_rules() ->
   LHS = erase(lhs),

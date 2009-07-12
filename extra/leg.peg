@@ -7,15 +7,15 @@ grammar <- space? head:row tail:(space row)*;
 % future:
 % grammar <- space? [row space];
 
-row <- atom space? '=' space? value : (1, 3); % a tuple containing varname and value
+row <- atom space? '=' space? value; % : (0, 2);  a tuple containing varname and value
 value <- array / dict / simple;
 simple <- number / atom;
 
-array <- '[' space? head:simple tail:(',' space? simple)* space? ']';
-dict <- '{' space? head:pair tail:(',' space? pair)* space? '}';
+array <- '[' space? array:(head:simple tail:(',' space? simple)*) space? ']' : 3;
+dict <- '{' space? dict:(head:pair tail:(',' space? pair)*) space? '}' : 3;
 pair <- atom space? ':' space? simple;
-% array <- '[' space? [simple* (space? ',' space?)] space? ']' : [3];
-% dict <- '{' space? {atom* (space? ':' space?) simple (space? ',' space?)} space? '}' : {3};
+% array <- '[' space? array:[simple* (space? ',' space?)] space? ']' : [3];
+% dict <- '{' space? dict:{atom* (space? ':' space?) simple (space? ',' space?)} space? '}' : {3};
 
 number <- (non_zero_digit digit+) / digit;
 atom <- [a-z]+;

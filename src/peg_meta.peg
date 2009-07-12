@@ -6,7 +6,7 @@ declaration <- nonterminal space '<-' space parsing_expression space? leg? space
 
 leg <- ':' space? leg_transform;
 
-symbol_id <- [1-9] [0-9]*;
+symbol_id <- [0-9]+;
 
 leg_transform <- symbol_id / leg_tuple;
 
