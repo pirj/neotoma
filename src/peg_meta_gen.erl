@@ -5,7 +5,7 @@
 transform(rules, Node, _Index) ->
   verify_rules(),
   Rules = string:join(lists:nth(2, Node), ";\n\n"),
-  Transforms = build_leg(),
+  Transforms = build_legs(),
   erase(leg),
   Rules ++ ".\n\n% Transforms\n"++Transforms++"\n";
 transform(declaration_sequence, Node, _Index) ->
@@ -99,7 +99,7 @@ add_nt(Symbol, Index) ->
 add_leg(_Symbol, []) ->
   nil;
 add_leg(Symbol, LegStruct) ->
-  Leg = lists:flatten(lists:nth(3, LegStruct)),
+  Leg = lists:nth(3, LegStruct),
   case get(leg) of
     undefined ->
       put(leg, [{Symbol, Leg}]);
@@ -107,14 +107,24 @@ add_leg(Symbol, LegStruct) ->
       put(leg, [{Symbol, Leg}|L])
   end.
 
-build_leg() ->
+build_legs() ->
   case get(leg) of
-    L when is_list(L) -> build_leg(L);
+    L when is_list(L) -> [build_leg(Leg) || Leg <- L];
     _ -> ""
   end.
 
-build_leg(Legs) ->
-  ["transform("++Symbol++", Node, _Index) -> lists:nth("++LegId++", Node);\n\n"  || {Symbol, LegId} <- Legs].
+%build_leg({Symbol, [_, {tuple, Tuple}, _]}) ->
+build_leg({Symbol, {tuple, Tuple}}) ->
+  io:format("~nTUPLE:~p~n", [Tuple]),
+  FirstTerm = proplists:get_value(head, Tuple),
+  OtherTerms =  [lists:last(T) || T <- proplists:get_value(tail, Tuple, [])],
+  Terms = [FirstTerm|OtherTerms],
+  "transform("++Symbol++", Node, _Index) -> {" ++process_terms(Terms)++ "};\n\n";
+build_leg({Symbol, LegId}) ->
+  "transform("++Symbol++", Node, _Index) -> lists:nth("++LegId++", Node);\n\n".
+
+process_terms(Terms) ->
+  ["lists:nth("++Term++", Node), " || Term <- Terms].
 
 verify_rules() ->
   LHS = erase(lhs),

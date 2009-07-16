@@ -5,9 +5,9 @@
 
 grammar <- space? head:row tail:(space row)*;
 % future:
-% grammar <- space? [row space];
+% grammar <- space? [row space] : [2];
 
-row <- atom space? '=' space? value; % : (0, 2);  a tuple containing varname and value
+row <- atom space? '=' space? value : (1, 5);
 value <- array / dict / simple;
 simple <- number / atom;
 

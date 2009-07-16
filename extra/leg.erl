@@ -43,6 +43,8 @@ transform(dict, Node, _Index) -> lists:nth(3, Node);
 
 transform(array, Node, _Index) -> lists:nth(3, Node);
 
+transform(row, Node, _Index) -> {lists:nth(1, Node), lists:nth(5, Node)};
+
 
 
 transform(_,Node,_Index) -> Node.
