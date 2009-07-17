@@ -15,10 +15,7 @@ rule(leg) ->
   peg:choose([fun term/2, fun leg_tuple/2]);
 
 rule(leg_tuple) ->
-  peg:seq([peg:string("("), peg:optional(fun space/2), peg:label('tuple', peg:seq([peg:label('head', fun term_or_atom/2), peg:label('tail', peg:zero_or_more(peg:seq([peg:string(","), peg:optional(fun space/2), fun term_or_atom/2])))])), peg:optional(fun space/2), peg:string(")")]);
-
-rule(term_or_atom) ->
-  peg:choose([fun term/2, fun nonterminal/2]);
+  peg:seq([peg:string("("), peg:optional(fun space/2), peg:label('tuple', peg:seq([peg:label('head', fun term/2), peg:label('tail', peg:zero_or_more(peg:seq([peg:string(","), peg:optional(fun space/2), fun term/2])))])), peg:optional(fun space/2), peg:string(")")]);
 
 rule(term) ->
   peg:one_or_more(peg:charclass("[0-9]"));

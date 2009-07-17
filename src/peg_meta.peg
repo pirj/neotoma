@@ -5,8 +5,7 @@ declaration_sequence <- head:declaration tail:(space declaration)*;
 declaration <- nonterminal space '<-' space parsing_expression space? (':' space? leg)? space? ';';
 
 leg <- term / leg_tuple;
-leg_tuple <- '(' space? tuple:(head:term_or_atom tail:(',' space? term_or_atom)*) space? ')' : 3;
-term_or_atom <- term / nonterminal;
+leg_tuple <- '(' space? tuple:(head:term tail:(',' space? term)*) space? ')' : 3;
 term <- [0-9]+;
 
 parsing_expression <- choice / sequence / primary;
