@@ -7,7 +7,7 @@ grammar <- space? head:row tail:(space row)*;
 % future:
 % grammar <- space? [row space] : [2];
 
-row <- atom space? '=' space? value : (1, 5);
+row <- atom space? '=' space? value : (row, 1, 5);
 value <- array / dict / simple;
 simple <- number / atom;
 

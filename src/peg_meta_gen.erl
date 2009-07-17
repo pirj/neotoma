@@ -113,7 +113,6 @@ build_legs() ->
     _ -> ""
   end.
 
-%build_leg({Symbol, [_, {tuple, Tuple}, _]}) ->
 build_leg({Symbol, {tuple, Tuple}}) ->
   FirstTerm = proplists:get_value(head, Tuple),
   OtherTerms =  [lists:last(T) || T <- proplists:get_value(tail, Tuple, [])],
@@ -122,8 +121,12 @@ build_leg({Symbol, {tuple, Tuple}}) ->
 build_leg({Symbol, LegId}) ->
   "transform("++Symbol++", Node, _Index) -> lists:nth("++LegId++", Node);\n\n".
 process_terms(Terms) ->
-  [[_|T1]|T] = [[", ", ["lists:nth("++Term++", Node)"]] || Term <- Terms],
+  [[_|T1]|T] = [[", ", process_term(Term)] || Term <- Terms],
   lists:flatten([T1|T]).
+process_term({nonterminal, Atom}) ->
+  Atom;
+process_term(Term) ->
+  "lists:nth("++Term++", Node)".
 
 verify_rules() ->
   LHS = erase(lhs),
